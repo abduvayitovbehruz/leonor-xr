@@ -31,7 +31,8 @@ loginForm.addEventListener("submit", async (e) => {
   submitBtn.textContent = "Kirilmoqda...";
 
   try {
-    await auth.signInWithEmailAndPassword(username, password);
+    const email = usernameToEmail(username);
+    await auth.signInWithEmailAndPassword(email, password);
     // onAuthStateChanged handles the rest
   } catch (err) {
     console.error(err);
