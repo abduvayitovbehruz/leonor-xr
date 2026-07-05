@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Bizning xotiralarimiz</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+</head>
+<body>
+
+<div id="sticker-layer"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div class="login-heart">💞</div>
+    <h1>Bizning xotiralarimiz</h1>
+    <p class="subtitle">Ikkalamiz uchun maxsus joy</p>
+    <form id="login-form">
+      <input type="text" id="login-username" placeholder="Login" autocomplete="username">
+      <input type="password" id="login-password" placeholder="Parol" autocomplete="current-password">
+      <div class="login-error" id="login-error"></div>
+      <button type="submit" class="btn btn-primary btn-block">Kirish</button>
+    </form>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app-shell" class="app-shell hidden">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn" id="hamburger-btn" aria-label="Menyu"><i class="ti ti-menu-2" aria-hidden="true"></i></button>
+      <div>
+        <div class="welcome-text" id="welcome-text">Xush kelibsiz!</div>
+      </div>
+    </div>
+    <button class="icon-btn" id="logout-btn" aria-label="Chiqish"><i class="ti ti-logout" aria-hidden="true"></i></button>
+  </div>
+
+  <div id="content" class="content"></div>
+
+  <div id="toast" class="toast"></div>
+</div>
+
+<!-- DRAWER -->
+<div id="drawer-overlay" class="drawer-overlay"></div>
+<div id="drawer" class="drawer">
+  <div class="drawer-header">
+    <div class="name" id="drawer-user-name">Foydalanuvchi</div>
+  </div>
+  <div id="nav-list"></div>
+  <div class="nav-divider admin-only hidden"></div>
+  <div class="nav-item admin-only hidden" id="admin-btn">
+    <i class="ti ti-settings" aria-hidden="true"></i><span>Admin panel</span>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div id="admin-modal" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <div class="modal-title-row">
+      <h2>Admin panel</h2>
+      <button class="icon-btn" id="admin-close-btn" aria-label="Yopish"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab-btn admin-tab-btn active" data-tab="users">Foydalanuvchilar</button>
+      <button class="tab-btn admin-tab-btn" data-tab="activity">Faollik</button>
+      <button class="tab-btn admin-tab-btn" data-tab="pending">O'chirishlar</button>
+      <button class="tab-btn admin-tab-btn" data-tab="profile">Mening nomim</button>
+    </div>
+
+    <div id="admin-tab-users" class="admin-tab-panel">
+      <h3 style="font-size:15px;margin-bottom:10px;">Yangi foydalanuvchi qo'shish</h3>
+      <form id="add-user-form">
+        <div class="form-group">
+          <label>Taxallus</label>
+          <input type="text" id="new-user-nickname" placeholder="Masalan: Sevgilim">
+        </div>
+        <div class="form-group">
+          <label>Login</label>
+          <input type="text" id="new-user-username" placeholder="Masalan: sevgilim2024">
+        </div>
+        <div class="form-group">
+          <label>Parol</label>
+          <input type="text" id="new-user-password" placeholder="Kamida 6 belgi">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Qo'shish</button>
+      </form>
+      <h3 style="font-size:15px;margin:20px 0 10px;">Mavjud foydalanuvchilar</h3>
+      <div id="admin-users-list"></div>
+    </div>
+
+    <div id="admin-tab-activity" class="admin-tab-panel hidden">
+      <div id="admin-activity-list"></div>
+    </div>
+
+    <div id="admin-tab-pending" class="admin-tab-panel hidden">
+      <div id="admin-pending-list"></div>
+    </div>
+
+    <div id="admin-tab-profile" class="admin-tab-panel hidden">
+      <div class="form-group">
+        <label>Sizning maxsus nomingiz (qiyomatligim)</label>
+        <input type="text" id="special-name-input" placeholder="Masalan: Qiyomatligim">
+      </div>
+      <button class="btn btn-primary btn-block" id="save-special-name-btn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
