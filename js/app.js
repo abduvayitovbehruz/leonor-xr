@@ -17,6 +17,14 @@ const NAV_ITEMS = [ALL_VIEW, ...SECTIONS];
 let currentSectionId = ALL_VIEW.id;
 let postsUnsubscribe = null;
 let pendingMediaFile = null; // {file, type}
+let commentUnsubscribes = {}; // postId -> unsubscribe funksiyasi
+
+function clearAllCommentListeners() {
+  Object.values(commentUnsubscribes).forEach(unsub => {
+    try { unsub(); } catch (e) { /* e'tiborsiz qoldiriladi */ }
+  });
+  commentUnsubscribes = {};
+}
 
 const pillScroll = document.getElementById("pill-scroll");
 const contentEl = document.getElementById("content");
@@ -224,6 +232,7 @@ function loadPosts(section) {
     .where("status", "==", "active")
     .orderBy("createdAt", "desc")
     .onSnapshot((snapshot) => {
+      clearAllCommentListeners();
       if (snapshot.empty) {
         listEl.innerHTML = `<div class="empty-state">Hali hech narsa yo'q. Birinchi bo'lib yozing.</div>`;
         return;
@@ -244,6 +253,7 @@ function loadAllPosts() {
     .where("status", "==", "active")
     .orderBy("createdAt", "desc")
     .onSnapshot((snapshot) => {
+      clearAllCommentListeners();
       if (snapshot.empty) {
         listEl.innerHTML = `<div class="empty-state">Hali hech narsa yo'q. Birinchi bo'lib yozing.</div>`;
         return;
