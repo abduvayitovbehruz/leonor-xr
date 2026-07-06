@@ -31,30 +31,24 @@
 
   <div class="topbar">
     <div class="topbar-left">
-      <button class="icon-btn" id="hamburger-btn" aria-label="Menyu"><i class="ti ti-menu-2" aria-hidden="true"></i></button>
+      <div class="topbar-heart">💞</div>
       <div>
         <div class="welcome-text" id="welcome-text">Xush kelibsiz!</div>
       </div>
     </div>
-    <button class="icon-btn" id="logout-btn" aria-label="Chiqish"><i class="ti ti-logout" aria-hidden="true"></i></button>
+    <div class="topbar-right">
+      <button class="icon-btn admin-only hidden" id="admin-btn" aria-label="Admin panel"><i class="ti ti-settings" aria-hidden="true"></i></button>
+      <button class="icon-btn" id="logout-btn" aria-label="Chiqish"><i class="ti ti-logout" aria-hidden="true"></i></button>
+    </div>
   </div>
+
+  <nav class="pill-nav">
+    <div class="pill-scroll" id="pill-scroll"></div>
+  </nav>
 
   <div id="content" class="content"></div>
 
   <div id="toast" class="toast"></div>
-</div>
-
-<!-- DRAWER -->
-<div id="drawer-overlay" class="drawer-overlay"></div>
-<div id="drawer" class="drawer">
-  <div class="drawer-header">
-    <div class="name" id="drawer-user-name">Foydalanuvchi</div>
-  </div>
-  <div id="nav-list"></div>
-  <div class="nav-divider admin-only hidden"></div>
-  <div class="nav-item admin-only hidden" id="admin-btn">
-    <i class="ti ti-settings" aria-hidden="true"></i><span>Admin panel</span>
-  </div>
 </div>
 
 <!-- ADMIN MODAL -->
