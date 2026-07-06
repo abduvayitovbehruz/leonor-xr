@@ -11,13 +11,14 @@ const SECTIONS = [
   { id: "sayohatlar", title: "Sayohatlar", icon: "ti-plane", fields: ["text", "description", "media"] }
 ];
 
-let currentSectionId = SECTIONS[0].id;
+const ALL_VIEW = { id: "barchasi", title: "Barchasi", icon: "ti-sparkles", isAll: true, fields: [] };
+const NAV_ITEMS = [ALL_VIEW, ...SECTIONS];
+
+let currentSectionId = ALL_VIEW.id;
 let postsUnsubscribe = null;
 let pendingMediaFile = null; // {file, type}
 
-const drawer = document.getElementById("drawer");
-const drawerOverlay = document.getElementById("drawer-overlay");
-const navList = document.getElementById("nav-list");
+const pillScroll = document.getElementById("pill-scroll");
 const contentEl = document.getElementById("content");
 
 function initAppAfterLogin() {
@@ -26,49 +27,52 @@ function initAppAfterLogin() {
   startFloatingStickers();
 }
 
-// ---------------- Drawer ----------------
-document.getElementById("hamburger-btn").addEventListener("click", () => {
-  drawer.classList.add("open");
-  drawerOverlay.classList.add("open");
-});
-function closeDrawer() {
-  drawer.classList.remove("open");
-  drawerOverlay.classList.remove("open");
-}
-drawerOverlay.addEventListener("click", closeDrawer);
-
+// ---------------- Pill navigatsiya (animatsiyali) ----------------
 function renderNav() {
-  navList.innerHTML = "";
-  SECTIONS.forEach(sec => {
-    const item = document.createElement("div");
-    item.className = "nav-item" + (sec.id === currentSectionId ? " active" : "");
-    item.innerHTML = `<i class="ti ${sec.icon}"></i><span>${sec.title}</span>`;
-    item.addEventListener("click", () => {
+  pillScroll.innerHTML = "";
+  NAV_ITEMS.forEach(sec => {
+    const pill = document.createElement("button");
+    pill.type = "button";
+    pill.className = "pill-btn" + (sec.id === currentSectionId ? " active" : "");
+    pill.innerHTML = `<i class="ti ${sec.icon}" aria-hidden="true"></i><span>${sec.title}</span>`;
+    pill.addEventListener("click", () => {
+      if (sec.id === currentSectionId) return;
       currentSectionId = sec.id;
-      closeDrawer();
       renderNav();
       switchSection(sec.id);
+      pill.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
     });
-    navList.appendChild(item);
+    pillScroll.appendChild(pill);
   });
 }
 
 // ---------------- Section switching ----------------
 function switchSection(sectionId) {
-  const section = SECTIONS.find(s => s.id === sectionId);
+  const section = NAV_ITEMS.find(s => s.id === sectionId);
   if (postsUnsubscribe) { postsUnsubscribe(); postsUnsubscribe = null; }
+
+  const formHtml = section.isAll ? "" : `<div id="post-form-wrap"></div>`;
+  const subtitle = section.isAll ? "Ikkalangiz joylagan hammasi shu yerda." : "Ikkalangiz uchun maxsus joy.";
 
   contentEl.innerHTML = `
     <div class="section-header">
       <h2>${section.title}</h2>
-      <p>Ikkalangiz uchun maxsus joy.</p>
+      <p>${subtitle}</p>
     </div>
-    <div id="post-form-wrap"></div>
+    ${formHtml}
     <div id="posts-list"></div>
   `;
 
-  renderPostForm(section);
-  loadPosts(section);
+  contentEl.classList.remove("content-enter");
+  void contentEl.offsetWidth; // reflow - qayta animatsiya ishga tushishi uchun
+  contentEl.classList.add("content-enter");
+
+  if (!section.isAll) {
+    renderPostForm(section);
+    loadPosts(section);
+  } else {
+    loadAllPosts();
+  }
 }
 
 // ---------------- Post form ----------------
@@ -226,7 +230,7 @@ function loadPosts(section) {
       }
       listEl.innerHTML = "";
       snapshot.forEach(doc => {
-        listEl.appendChild(renderPostCard(doc.id, doc.data()));
+        listEl.appendChild(renderPostCard(doc.id, doc.data(), false));
       });
     }, (err) => {
       console.error(err);
@@ -234,7 +238,27 @@ function loadPosts(section) {
     });
 }
 
-function renderPostCard(postId, post) {
+function loadAllPosts() {
+  const listEl = document.getElementById("posts-list");
+  postsUnsubscribe = db.collection("posts")
+    .where("status", "==", "active")
+    .orderBy("createdAt", "desc")
+    .onSnapshot((snapshot) => {
+      if (snapshot.empty) {
+        listEl.innerHTML = `<div class="empty-state">Hali hech narsa yo'q. Birinchi bo'lib yozing.</div>`;
+        return;
+      }
+      listEl.innerHTML = "";
+      snapshot.forEach(doc => {
+        listEl.appendChild(renderPostCard(doc.id, doc.data(), true));
+      });
+    }, (err) => {
+      console.error(err);
+      listEl.innerHTML = `<div class="empty-state">Ma'lumotlarni yuklab bo'lmadi.</div>`;
+    });
+}
+
+function renderPostCard(postId, post, showSectionBadge) {
   const el = document.createElement("div");
   el.className = "post-card";
 
@@ -245,6 +269,11 @@ function renderPostCard(postId, post) {
   const likesObj = post.likes || {};
   const likeCount = Object.keys(likesObj).length;
   const iLiked = !!likesObj[currentUser.uid];
+
+  const sectionInfo = SECTIONS.find(s => s.id === post.section);
+  const badgeHtml = (showSectionBadge && sectionInfo)
+    ? `<span class="section-badge"><i class="ti ${sectionInfo.icon}" aria-hidden="true"></i> ${sectionInfo.title}</span>`
+    : "";
 
   let mediaHtml = "";
   if (post.mediaUrl) {
@@ -262,6 +291,7 @@ function renderPostCard(postId, post) {
         <div class="post-author-name ${isAdminAuthor ? "admin" : ""}">${escapeHtml(displayName)}</div>
         <div class="post-date">${dateStr}</div>
       </div>
+      ${badgeHtml}
       ${canManage ? `<div class="post-owner-actions">
         <button class="icon-mini edit-post-btn" aria-label="Tahrirlash"><i class="ti ti-edit" aria-hidden="true"></i></button>
         <button class="icon-mini delete-post-btn" aria-label="O'chirish"><i class="ti ti-trash" aria-hidden="true"></i></button>
