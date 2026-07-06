@@ -101,7 +101,6 @@ function onLoginSuccess() {
     : currentUser.nickname;
 
   document.getElementById("welcome-text").textContent = `Xush kelibsiz, ${displayName}!`;
-  document.getElementById("drawer-user-name").textContent = displayName;
 
   document.querySelectorAll(".admin-only").forEach(el => {
     el.classList.toggle("hidden", !currentUser.isAdmin);
