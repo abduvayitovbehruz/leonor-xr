@@ -1,39 +1,31 @@
 // ==========================================================
-// CLOUDINARY SOZLAMALARI (rasm/video bepul saqlash uchun)
-// cloudinary.com da bepul hisob oching va quyidagilarni to'ldiring
+// BU YERGA O'ZINGIZNING FIREBASE SOZLAMALARINGIZNI QO'YING
+// Firebase Console > Project Settings > General > Your apps > SDK setup
 // ==========================================================
-const CLOUDINARY_CLOUD_NAME = "BU_YERGA_CLOUD_NAME";
-const CLOUDINARY_UPLOAD_PRESET = "BU_YERGA_UPLOAD_PRESET";
+const firebaseConfig = {
+  apiKey: "AIzaSyAfJkO8JHQQZm9hlqoDgUVCwc-DEzJCUVk",
+  authDomain: "leonor-xr.firebaseapp.com",
+  projectId: "leonor-xr",
+  storageBucket: "leonor-xr.firebasestorage.app",
+  messagingSenderId: "867599890909",
+  appId: "1:867599890909:web:7fdab8b049969e485b1e34"
+};
 
-function uploadToCloudinary(file, resourceType, onProgress) {
-  return new Promise((resolve, reject) => {
-    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+// Asosiy ilova (login qilingan sessiyani ushlab turadi)
+firebase.initializeApp(firebaseConfig);
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", url);
+// Ikkinchi (yordamchi) ilova — admin yangi foydalanuvchi yaratganda
+// o'zining sessiyasidan chiqib ketmasligi uchun ishlatiladi
+const secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
 
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable && onProgress) {
-        onProgress(Math.round((e.loaded / e.total) * 100));
-      }
-    };
+const auth = firebase.auth();
+const secondaryAuth = secondaryApp.auth();
+const db = firebase.firestore();
 
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          resolve(data.secure_url);
-        } catch (e) {
-          reject(new Error("Javobni o'qib bo'lmadi"));
-        }
-      } else {
-        reject(new Error("Yuklash muvaffaqiyatsiz: " + xhr.status));
-      }
-    };
-    xhr.onerror = () => reject(new Error("Tarmoq xatosi"));
-    xhr.send(formData);
-  });
+// Fiktiv domen — login/parol tizimini soddalashtirish uchun
+// foydalanuvchi nomi shu domen bilan elektron pochtaga aylantiriladi
+const FAKE_EMAIL_DOMAIN = "@sevgi-sayti.local";
+
+function usernameToEmail(username) {
+  return username.trim().toLowerCase().replace(/\s+/g, "") + FAKE_EMAIL_DOMAIN;
 }
