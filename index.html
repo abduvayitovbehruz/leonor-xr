@@ -38,10 +38,9 @@
 
   <div class="topbar">
     <div class="topbar-left">
+      <button class="icon-btn" id="hamburger-btn" aria-label="Menyu"><i class="ti ti-menu-2" aria-hidden="true"></i></button>
       <div class="topbar-heart">💞</div>
-      <div>
-        <div class="welcome-text" id="welcome-text">Xush kelibsiz!</div>
-      </div>
+      <div class="welcome-text" id="welcome-text">Xush kelibsiz!</div>
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="theme-toggle-btn" aria-label="Rejimni almashtirish"><i class="ti ti-moon" id="theme-toggle-icon" aria-hidden="true"></i></button>
@@ -50,13 +49,25 @@
     </div>
   </div>
 
-  <nav class="pill-nav">
-    <div class="pill-scroll" id="pill-scroll"></div>
-  </nav>
-
   <div id="content" class="content"></div>
 
   <div id="toast" class="toast"></div>
+</div>
+
+<!-- DRAWER (bo'limlar menyusi) -->
+<div id="drawer-overlay" class="drawer-overlay"></div>
+<div id="drawer" class="drawer">
+  <div class="drawer-header">
+    <div class="drawer-heart">💞</div>
+    <div class="name" id="drawer-user-name">Bo'limlar</div>
+  </div>
+  <div id="nav-list"></div>
+</div>
+
+<!-- MEDIA LIGHTBOX (rasm/video kattalashtirib ko'rish) -->
+<div id="media-lightbox" class="lightbox hidden">
+  <button id="lightbox-close" class="lightbox-close" aria-label="Yopish"><i class="ti ti-x" aria-hidden="true"></i></button>
+  <div id="lightbox-content" class="lightbox-content"></div>
 </div>
 
 <!-- ADMIN MODAL -->
