@@ -324,7 +324,7 @@ function renderPostCard(postId, post, showSectionBadge) {
       <button class="action-btn like-btn ${iLiked ? "liked" : ""}"><i class="ti ti-heart" aria-hidden="true"></i><span>${likeCount}</span></button>
       <button class="action-btn comment-toggle-btn"><i class="ti ti-message-circle" aria-hidden="true"></i><span>Komment</span></button>
     </div>
-    <div class="comments-wrap hidden" id="comments-${postId}"></div>
+    <div class="comments-wrap" id="comments-${postId}"></div>
   `;
 
   el.querySelector(".like-btn").addEventListener("click", () => toggleLike(postId, likesObj));
@@ -335,12 +335,23 @@ function renderPostCard(postId, post, showSectionBadge) {
   }
   const mediaEl = el.querySelector(".media-clickable");
   if (mediaEl) {
-    mediaEl.addEventListener("click", () => openLightbox(post.mediaUrl, post.mediaType));
+    mediaEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openLightbox(post.mediaUrl, post.mediaType);
+    });
   }
   const videoEl = el.querySelector("video.post-media");
   if (videoEl) {
+    videoEl.addEventListener("click", (e) => e.stopPropagation());
     videoEl.addEventListener("dblclick", () => openLightbox(post.mediaUrl, post.mediaType));
   }
+
+  // Karta ustiga bosilganda (tugma/media'dan tashqari) kommentlar chiroyli ochiladi
+  el.addEventListener("click", (e) => {
+    if (e.target.closest("button") || e.target.closest("video") || e.target.closest("input")) return;
+    toggleComments(postId);
+  });
+  el.style.cursor = "pointer";
 
   return el;
 }
@@ -443,9 +454,9 @@ async function editPost(postId, post) {
 // ---------------- Comments ----------------
 function toggleComments(postId) {
   const wrap = document.getElementById(`comments-${postId}`);
-  const isHidden = wrap.classList.contains("hidden");
-  wrap.classList.toggle("hidden");
-  if (isHidden && !wrap.dataset.loaded) {
+  const isOpening = !wrap.classList.contains("open");
+  wrap.classList.toggle("open");
+  if (isOpening && !wrap.dataset.loaded) {
     wrap.dataset.loaded = "1";
     loadComments(postId, wrap);
   }
