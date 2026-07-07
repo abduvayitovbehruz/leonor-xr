@@ -7,6 +7,7 @@ const adminBtn = document.getElementById("admin-btn");
 const adminCloseBtn = document.getElementById("admin-close-btn");
 
 adminBtn.addEventListener("click", () => {
+  closeDrawer();
   adminModal.classList.remove("hidden");
   showAdminTab("users");
 });
@@ -275,6 +276,7 @@ document.getElementById("save-special-name-btn").addEventListener("click", async
     currentUser.specialName = val || null;
     const displayName = val || currentUser.nickname;
     document.getElementById("welcome-text").textContent = `Xush kelibsiz, ${displayName}!`;
+    document.getElementById("drawer-user-name").textContent = displayName;
     showToast("Saqlandi.");
   } catch (err) {
     console.error(err);
