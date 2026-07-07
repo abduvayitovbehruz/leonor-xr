@@ -26,7 +26,9 @@ function clearAllCommentListeners() {
   commentUnsubscribes = {};
 }
 
-const pillScroll = document.getElementById("pill-scroll");
+const drawer = document.getElementById("drawer");
+const drawerOverlay = document.getElementById("drawer-overlay");
+const navList = document.getElementById("nav-list");
 const contentEl = document.getElementById("content");
 
 function initAppAfterLogin() {
@@ -35,22 +37,30 @@ function initAppAfterLogin() {
   startFloatingStickers();
 }
 
-// ---------------- Pill navigatsiya (animatsiyali) ----------------
+// ---------------- Drawer (gamburger menyu) ----------------
+document.getElementById("hamburger-btn").addEventListener("click", () => {
+  drawer.classList.add("open");
+  drawerOverlay.classList.add("open");
+});
+function closeDrawer() {
+  drawer.classList.remove("open");
+  drawerOverlay.classList.remove("open");
+}
+drawerOverlay.addEventListener("click", closeDrawer);
+
 function renderNav() {
-  pillScroll.innerHTML = "";
+  navList.innerHTML = "";
   NAV_ITEMS.forEach(sec => {
-    const pill = document.createElement("button");
-    pill.type = "button";
-    pill.className = "pill-btn" + (sec.id === currentSectionId ? " active" : "");
-    pill.innerHTML = `<i class="ti ${sec.icon}" aria-hidden="true"></i><span>${sec.title}</span>`;
-    pill.addEventListener("click", () => {
-      if (sec.id === currentSectionId) return;
+    const item = document.createElement("div");
+    item.className = "nav-item" + (sec.id === currentSectionId ? " active" : "");
+    item.innerHTML = `<i class="ti ${sec.icon}" aria-hidden="true"></i><span>${sec.title}</span>`;
+    item.addEventListener("click", () => {
       currentSectionId = sec.id;
+      closeDrawer();
       renderNav();
       switchSection(sec.id);
-      pill.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
     });
-    pillScroll.appendChild(pill);
+    navList.appendChild(item);
   });
 }
 
@@ -290,7 +300,7 @@ function renderPostCard(postId, post, showSectionBadge) {
     if (post.mediaType === "video") {
       mediaHtml = `<video class="post-media" src="${post.mediaUrl}" controls></video>`;
     } else {
-      mediaHtml = `<img class="post-media" src="${post.mediaUrl}" alt="">`;
+      mediaHtml = `<img class="post-media media-clickable" src="${post.mediaUrl}" alt="" loading="lazy">`;
     }
   }
 
@@ -323,9 +333,37 @@ function renderPostCard(postId, post, showSectionBadge) {
     el.querySelector(".delete-post-btn").addEventListener("click", () => deletePost(postId, post));
     el.querySelector(".edit-post-btn").addEventListener("click", () => editPost(postId, post));
   }
+  const mediaEl = el.querySelector(".media-clickable");
+  if (mediaEl) {
+    mediaEl.addEventListener("click", () => openLightbox(post.mediaUrl, post.mediaType));
+  }
+  const videoEl = el.querySelector("video.post-media");
+  if (videoEl) {
+    videoEl.addEventListener("dblclick", () => openLightbox(post.mediaUrl, post.mediaType));
+  }
 
   return el;
 }
+
+// ---------------- Media lightbox (kattalashtirib ko'rish) ----------------
+function openLightbox(url, type) {
+  const lightbox = document.getElementById("media-lightbox");
+  const content = document.getElementById("lightbox-content");
+  content.innerHTML = type === "video"
+    ? `<video src="${url}" controls autoplay></video>`
+    : `<img src="${url}" alt="">`;
+  lightbox.classList.remove("hidden");
+}
+function closeLightbox() {
+  const lightbox = document.getElementById("media-lightbox");
+  const content = document.getElementById("lightbox-content");
+  lightbox.classList.add("hidden");
+  content.innerHTML = "";
+}
+document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
+document.getElementById("media-lightbox").addEventListener("click", (e) => {
+  if (e.target.id === "media-lightbox") closeLightbox();
+});
 
 function escapeHtml(str) {
   const div = document.createElement("div");
