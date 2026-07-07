@@ -1,22 +1,25 @@
 // ==========================================================
-// KUN / TUN REJIMI
+// KUN / TUN REJIMI - faqat tugma orqali almashadi
 // ==========================================================
-function applyTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("theme", theme);
-  const icon = document.getElementById("theme-toggle-icon");
-  if (icon) {
-    icon.className = "ti " + (theme === "dark" ? "ti-sun" : "ti-moon");
+(function () {
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem("theme", theme); } catch (e) { /* xatolik e'tiborsiz qoldiriladi */ }
+    var icon = document.getElementById("theme-toggle-icon");
+    if (icon) {
+      icon.className = "ti " + (theme === "dark" ? "ti-sun" : "ti-moon");
+    }
   }
-}
 
-document.addEventListener("DOMContentLoaded", function () {
-  applyTheme(document.documentElement.getAttribute("data-theme") || "light");
-  const btn = document.getElementById("theme-toggle-btn");
+  // Sahifa yuklanganda: avval saqlangan tanlov, bo'lmasa kunduzgi rejim
+  var current = document.documentElement.getAttribute("data-theme") || "light";
+  applyTheme(current);
+
+  var btn = document.getElementById("theme-toggle-btn");
   if (btn) {
     btn.addEventListener("click", function () {
-      const current = document.documentElement.getAttribute("data-theme");
-      applyTheme(current === "dark" ? "light" : "dark");
+      var now = document.documentElement.getAttribute("data-theme");
+      applyTheme(now === "dark" ? "light" : "dark");
     });
   }
-});
+})();
